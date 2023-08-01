@@ -1,16 +1,10 @@
-const config = require('../config/')
+const knex = require('knex')
+const knexfile = require('./knexfile')
+const { Model } = require('objection')
 
-const USER = encodeURIComponent(config.dbUser)
-const PASSWORD = encodeURIComponent(config.dbPassword)
-const URI_LOCAL = `postgres://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`
-
-module.exports = {
-  development: {
-    url: URI_LOCAL,
-    dialect: 'postgres'
-  },
-  production: {
-    url: URI_LOCAL,
-    dialect: 'postgres'
-  }
+const dbSetup = () => {
+  const db = knex(knexfile.development)
+  Model.knex(db)
 }
+
+module.exports = dbSetup

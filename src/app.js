@@ -2,12 +2,14 @@ const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
 const morgan = require('morgan')
-const { boomErrorHandler, errorHandler } = require('./middlewares/error.handler')
+const { boomErrorHandler, errorHandler, objectionErrorHandler } = require('./middlewares/error.handler')
 const routerApi = require('./routes')
 const swaggerDocs = require('./utils/swagger')
 const { port } = require('./config')
 const boom = require('@hapi/boom')
+const dbSetup = require('./db/config')
 
+dbSetup()
 const app = express()
 
 app.use(express.json())
@@ -26,6 +28,7 @@ app.get('*', (req, res) => {
   throw boom.notFound('Route not found')
 })
 
+app.use(objectionErrorHandler)
 app.use(boomErrorHandler)
 app.use(errorHandler)
 

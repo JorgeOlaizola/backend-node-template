@@ -1,38 +1,51 @@
-const { Model, DataTypes } = require('sequelize')
-
-const PERSON_TABLE = 'persons'
-
-const PersonSchema = {
-  id: {
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true,
-    type: DataTypes.INTEGER
-  },
-  firstName: {
-    allowNull: false,
-    type: DataTypes.STRING,
-    field: 'first_name'
-  },
-  lastName: {
-    allowNull: false,
-    type: DataTypes.STRING,
-    field: 'last_name'
-  }
-}
+const { Model } = require('objection')
 
 class Person extends Model {
-  static associate (models) {
+  static get tableName () {
+    return 'person'
   }
 
-  static config (sequelize) {
+  fullName () {
+    return this.firstName + ' ' + this.lastName
+  }
+
+  // static get modifiers () {
+  //   return {
+  //     omitDeletedAt (builder) {
+  //       builder.select('*').whereNull('deletedAt')
+  //     }
+  //   }
+  // }
+
+  // static query (...args) {
+  //   return super.query(...args).modify('omitDeletedAt')
+  // }
+
+  static get jsonSchema () {
     return {
-      sequelize,
-      tableName: PERSON_TABLE,
-      modelName: 'Person',
-      timestamps: false
+      type: 'object',
+      required: ['firstName', 'lastName'],
+
+      properties: {
+        id: { type: 'integer' },
+        firstName: { type: 'string', minLength: 1, maxLength: 255 },
+        lastName: { type: 'string', minLength: 1, maxLength: 255 }
+      }
     }
   }
+
+  // static get relationMappings () {
+  //   return {
+  //     week: {
+  //       relation: Model.HasManyRelation,
+  //       modelClass: Week,
+  //       join: {
+  //         from: 'employee.weekId',
+  //         to: 'week.id'
+  //       }
+  //     }
+  //   }
+  // }
 }
 
-module.exports = { Person, PERSON_TABLE, PersonSchema }
+module.exports = Person
